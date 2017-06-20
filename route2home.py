@@ -5,6 +5,7 @@ from datetime import datetime
 import time
 import argparse
 from argparse import RawTextHelpFormatter
+import re
 
 __VERSION__ = "0.1"
 
@@ -29,10 +30,17 @@ gmaps = googlemaps.Client(key=args.apikey)
 now = datetime.now()
 directions_result = gmaps.directions(args.origin, args.destination, mode="driving", alternatives=args.alternatives ,departure_time=now, units="metric")
 
+#print json.dumps(directions_result,indent=4)
+
 ## ROUTE CALC
 
 for i in directions_result:
+    summary = []
     time_to_home = i['legs'][0]['duration_in_traffic']['value']
-    route_to_home = i['summary']
     distance_to_home = i['legs'][0]['distance']['value']
-    print "Time to home: %s, %s kms via %s" %(time.strftime('%H:%M',time.gmtime(time_to_home)),distance_to_home/1000,route_to_home)
+    for j in i['legs'][0]['steps']:
+        if j['distance']['value'] > 1000:
+            road = re.search(r"<b>[A-Z]-(\d*)</b>", j['html_instructions'])
+            clean = re.sub(r"<.?b>", "", road.string[road.start():road.end()])
+            summary.append(clean)
+    print "Time to home: %s, %s kms via %s" %(time.strftime('%H:%M',time.gmtime(time_to_home)),distance_to_home/1000,list(summary))

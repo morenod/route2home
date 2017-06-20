@@ -12,3 +12,4 @@ https://github.com/googlemaps/google-maps-services-python
 # TODO
 - API Key verification
 - Origin and destination verification
+- Improve roads summary
