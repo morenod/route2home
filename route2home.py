@@ -6,6 +6,8 @@ import time
 import argparse
 from argparse import RawTextHelpFormatter
 import re
+import sys
+import os
 
 __VERSION__ = "0.1"
 
@@ -27,10 +29,22 @@ args = parser.parse_args()
 
 gmaps = googlemaps.Client(key=args.apikey)
 
+try:
+    if not gmaps.geocode(args.origin):
+        print "%s: invalid origin: -- '%s'" %(os.path.basename(sys.argv[0]),args.origin)
+        print "Try '%s' --help for more information" %(os.path.basename(sys.argv[0]))
+        sys.exit(2)
+    elif not gmaps.geocode(args.destination):
+        print "%s: invalid destination: -- '%s'" %(os.path.basename(sys.argv[0]),args.destination)
+        print "Try '%s' --help for more information" %(os.path.basename(sys.argv[0]))
+        sys.exit(2)
+except googlemaps.exceptions.ApiError:
+    print "%s: invalid API Key" %(os.path.basename(sys.argv[0]))
+    print "Try '%s' --help for more information" %(os.path.basename(sys.argv[0]))
+    sys.exit(2)
+
 now = datetime.now()
 directions_result = gmaps.directions(args.origin, args.destination, mode="driving", alternatives=args.alternatives ,departure_time=now, units="metric")
-
-#print json.dumps(directions_result,indent=4)
 
 ## ROUTE CALC
 
