@@ -36,6 +36,7 @@ directions_result = gmaps.directions(args.origin, args.destination, mode="drivin
 
 for i in directions_result:
     summary = []
+    clean2 = []
     time_to_home = i['legs'][0]['duration_in_traffic']['value']
     distance_to_home = i['legs'][0]['distance']['value']
     for j in i['legs'][0]['steps']:
@@ -43,4 +44,7 @@ for i in directions_result:
             road = re.search(r"<b>[A-Z]-(\d*)</b>", j['html_instructions'])
             clean = re.sub(r"<.?b>", "", road.string[road.start():road.end()])
             summary.append(clean)
-    print "Time to home: %s, %s kms via %s" %(time.strftime('%H:%M',time.gmtime(time_to_home)),distance_to_home/1000,list(summary))
+    for k in summary:
+        if k not in clean2:
+            clean2.append(k)
+    print "Time to home: %s, %s kms via %s" %(time.strftime('%H:%M',time.gmtime(time_to_home)),distance_to_home/1000,'[%s]' % ' -> '.join(map(str, clean2)))
