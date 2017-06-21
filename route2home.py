@@ -9,7 +9,7 @@ import re
 import sys
 import os
 
-__VERSION__ = "0.1"
+__VERSION__ = "1.0"
 
 ## ARGS PARSER
 
